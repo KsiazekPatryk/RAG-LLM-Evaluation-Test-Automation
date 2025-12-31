@@ -6,17 +6,14 @@ from ragas.llms import LangchainLLMWrapper
 from ragas.metrics import LLMContextRecall
 import requests
 
-os.environ["OPENAI_API_KEY"] = "your_openai_api_key_here"
+from utils import get_llm_response, load_test_data
+
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("getData", 
-                         [
-                             {
-                                 "question" : "How many articles are there in the Selenium webdriver python course?",
-                                 "reference" : "23"
-                             }
-                         ],indirect=True
-)
+                        load_test_data(),indirect=True
+                        )
 async def test_context_recall(llm_wrapper,getData):
     question = "How many articles are there in the Selenium webdriver python course?"
 
@@ -29,13 +26,7 @@ async def test_context_recall(llm_wrapper,getData):
 @pytest.fixture
 def getData(request):
     test_data = request.param
-
-    responseDict = requests.post("https://rahulshettyacademy.com/rag-llm/ask", 
-                  json={
-                        "question": test_data["question"],
-                        "chat_history": [                           
-                        ]
-                    }).json()
+    responseDict = get_llm_response(test_data)
     
     sample = SingleTurnSample(
         user_input=test_data["question"],
@@ -44,4 +35,3 @@ def getData(request):
                             responseDict["retrieved_docs"][2]["page_content"]],
         reference=test_data["reference"],
     )
-    return sample

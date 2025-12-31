@@ -1,6 +1,9 @@
+import os
 import pytest
 from langchain_openai import ChatOpenAI
 from ragas.llms import LangchainLLMWrapper
+
+os.environ["OPENAI_API_KEY"] = "your_openai_api_key_here"
 
 @pytest.fixture
 def llm_wrapper():
