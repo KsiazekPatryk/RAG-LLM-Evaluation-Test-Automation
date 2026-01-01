@@ -1,3 +1,4 @@
+import os
 from langsmith import evaluate
 import pytest
 from ragas import EvaluationDataset, SingleTurnSample
@@ -5,7 +6,7 @@ from ragas.metrics import ResponseRelevancy, FactualCorrectness
 
 from utils import get_llm_response, load_test_data
 
-
+os.environ["RAGAS_APP_TOKEN"] = "Your_RAGAS_APP_TOKEN"
 @pytest.mark.parametrize("getData", load_test_data("Test5.json"), indirect=True)
 @pytest.mark.asyncio
 
@@ -19,6 +20,8 @@ async def test_relevancy_factual(llm_wrapper,getData):
     
     print(results)
     results["answer_relevancy"]
+    #upload the results
+    results.upload()
 
 @pytest.fixture
 def getData(request):
