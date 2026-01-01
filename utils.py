@@ -1,8 +1,10 @@
 import requests
 import json
+from pathlib import Path
 
 def load_test_data(filename):
-        test_data_path = "/Users/patrykksiazek/RAG-LLM-Evaluation-Test-Automation/RAG-LLM-Evaluation-Test-Automation/testdata/Test3_Framework.json"
+        project_directory = Path(__file__).parent.absolute()
+        test_data_path = project_directory/"test_data"/filename
         with open(test_data_path) as f:
                return json.load(f)
 

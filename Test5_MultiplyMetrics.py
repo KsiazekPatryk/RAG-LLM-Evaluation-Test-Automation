@@ -1,0 +1,36 @@
+from langsmith import evaluate
+import pytest
+from ragas import EvaluationDataset, SingleTurnSample
+from ragas.metrics import ResponseRelevancy, FactualCorrectness
+
+from utils import get_llm_response, load_test_data
+
+
+@pytest.mark.parametrize("getData", load_test_data("Test5.json"), indirect=True)
+@pytest.mark.asyncio
+
+async def test_relevancy_factual(llm_wrapper,getData):
+
+    metrics = [ResponseRelevancy(llm=llm_wrapper),
+               FactualCorrectness(llm=llm_wrapper)]
+    
+    eval_dataset = EvaluationDataset([getData])
+    results = evaluate(dataset=eval_dataset,metrics=metrics)
+    
+    print(results)
+    results["answer_relevancy"]
+
+@pytest.fixture
+def getData(request):
+    test_data = request.param
+    responseDict = get_llm_response(test_data)
+
+    sample = SingleTurnSample(
+        user_input = test_data["question"],
+        response = responseDict["answer"],
+        retrieved_contexts = [doc["page_content"] for doc in responseDict.get("retrieved_docs")],
+        reference = test_data["reference"]
+    )
+
+    return sample
+
