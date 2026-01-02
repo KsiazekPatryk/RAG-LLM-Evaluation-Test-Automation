@@ -18,8 +18,8 @@ async def test_topicAdherence(llm_wrapper,getData):
 
 @pytest.fixture
 def getData(request):
-    test_data = request.param
-    responseDict = get_llm_response(test_data)
+    #test_data = request.param
+    #responseDict = get_llm_response(test_data)
     conversation =[
         HumanMessage(content="How many articles are there in the selenium webdriver python course"),
         AIMessage(content="There are 23 articles in the course"),
