@@ -1,6 +1,7 @@
 import pytest
-from ragas import SingleTurnSample
-from ragas.metrics import Faithfulness
+from ragas import MultiTurnSample
+from ragas.metrics import TopicAdherenceScore
+from ragas.messages import HumanMessage, AIMessage
 
 from utils import get_llm_response, load_test_data
 
@@ -8,9 +9,9 @@ from utils import get_llm_response, load_test_data
 @pytest.mark.parametrize("getData",load_test_data("Test4.json"),indirect=True)
 
 @pytest.mark.asyncio
-async def test_faitfulness(llm_wrapper,getData):
-    faithful = Faithfulness(llm=llm_wrapper)
-    score = await faithful.single_turn_ascore(getData)
+async def test_topicAdherence(llm_wrapper,getData):
+    topicScore = TopicAdherenceScore(llm=llm_wrapper)
+    score = await topicScore.multi_turn_ascore(getData)
     print(score)
     assert score > 0.8
 
@@ -19,10 +20,16 @@ async def test_faitfulness(llm_wrapper,getData):
 def getData(request):
     test_data = request.param
     responseDict = get_llm_response(test_data)
-    
-    sample = SingleTurnSample(
-        user_input=test_data["question"],
-        response=responseDict["answer"],
-        retrieved_contexts=[doc["page_content"] for doc in responseDict.get("retrieved_docs")]
-    )
+    conversation =[
+        HumanMessage(content="How many articles are there in the selenium webdriver python course"),
+        AIMessage(content="There are 23 articles in the course"),
+        HumanMessage(content="How many downloadable resources are there in the course?"),
+        AIMessage(content="There are 9 downloadable resources in the course.")
+    ]
+    reference = ["""
+    The AI should:
+    1. Give results related to the selenium webdriver python course.
+    2. There are 23 articles and 9 downloadable resources in the course."""
+    ]
+    sample = MultiTurnSample(user_input=conversation,reference_topics=reference)
     return sample
