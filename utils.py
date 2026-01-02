@@ -8,6 +8,8 @@ def load_test_data(filename):
         with open(test_data_path) as f:
                return json.load(f)
 
+#user_input= test_data["eval_sample"]["user_input"]
+
 def get_llm_response(test_data):
     responseDict = requests.post("https://rahulshettyacademy.com/rag-llm/ask", 
                   json={
