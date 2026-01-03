@@ -15,7 +15,7 @@ async def test_rubric_score(llm_wrapper,getData):
 }
 
 rubrics_score = RubricsScore(rubrics=rubrics, llm=llm_wrapper)
-score = await rubrics_score.single_turn_ascore(getData)
+score = rubrics_score.single_turn_ascore(getData)
 print(score)
 assert score > 6
 
